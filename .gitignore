@@ -1,0 +1,10 @@
+packages/gateway/config
+packages/users/config
+packages/reviews/config
+packages/proposals/config
+packages/locations/config
+packages/gateway/node_modules/
+packages/users/node_modules/
+packages/reviews/node_modules/
+packages/proposals/node_modules/
+packages/locations/node_modules/
