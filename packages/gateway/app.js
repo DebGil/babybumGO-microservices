@@ -1,6 +1,4 @@
 const express = require('express')
-require('./db/mongoose')
-const userRouter = require('./routers/user')
 const Eureka = require('eureka-js-client').Eureka
 
 const PORT = process.env.PORT 
@@ -8,11 +6,11 @@ const PORT = process.env.PORT
 const client = new Eureka({
     // application instance information
     instance: {
-        app: 'users',
+        app: 'gateway',
         hostName: 'localhost',
         ipAddr: '127.0.0.1',
         statusPageUrl: `http://localhost:${PORT}`,
-        vipAddress: 'users',
+        vipAddress: 'gateway',
         port: {
           $: PORT,
           '@enabled': 'true',
@@ -32,10 +30,23 @@ const client = new Eureka({
     },
   });
 
-const app = express()
+  const app = express()
 
-app.use(express.json())
-app.use(userRouter)
+var userInstance = ''
+
+client.logger.level('debug')
+client.start(error => {
+    console.log(error || 'NodeJS Eureka Started!')
+  
+    // App
+    app.get('/', (req, res) => {
+      res.send('Hello from NodeJS Eureka Client\n')
+      res.end()
+    })
+    
+  })
 
 
-module.exports = {app, client}
+app.listen(PORT, () => {
+    console.log('Server is up on port ' + PORT)
+})
