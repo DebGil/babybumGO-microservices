@@ -47,6 +47,12 @@ client.start(error => {
   })
 
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log('Server is up on port ' + PORT)
 })
+
+process.on('SIGINT', function() {
+  console.log('Do something useful here.')
+  client.stop()
+  server.close()
+});

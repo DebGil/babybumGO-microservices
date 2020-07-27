@@ -1,7 +1,7 @@
 const express = require('express')
 const Location = require('../../../locations/src/models/location')
 const Proposal = require('../models/proposal')
-const {auth, access} = require('../middleware/auth')
+const {auth, access} = require('../../../common/src/middleware/auth')
 const router = new express.Router()
 
 router.patch('/proposals/:id', auth, access('admin'), async (req, res) => {

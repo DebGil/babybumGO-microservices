@@ -1,6 +1,6 @@
 const express = require('express')
 const Review = require('../models/review')
-const {auth, access} = require('../middleware/auth')
+const {auth, access} = require('../../../common/src/middleware/auth')
 const mongoose = require('mongoose')
 const router = new express.Router()
 

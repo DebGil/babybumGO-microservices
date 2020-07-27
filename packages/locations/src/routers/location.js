@@ -1,7 +1,7 @@
 const express = require('express')
 const Location = require('../models/location')
 const Proposal = require('../../../proposals/src/models/proposal')
-const {auth, access} = require('../middleware/auth')
+const {auth, access} = require('../../../common/src/middleware/auth')
 const geocode = require('../utils/geocode')
 const mongoose = require('mongoose')
 const router = new express.Router()
