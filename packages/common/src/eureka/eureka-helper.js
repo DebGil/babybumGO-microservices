@@ -1,6 +1,6 @@
 const Eureka = require('eureka-js-client').Eureka;
 const eurekaHost = (process.env.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE || '127.0.0.1');
-const eurekaPort = 9091;
+const eurekaPort = 8761;
 const hostName = (process.env.HOSTNAME || 'localhost')
 const ipAddr = '172.0.0.1';
 
@@ -20,6 +20,8 @@ exports.registerWithEureka = function(appName, PORT) {
         '@class': 'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo',
         name: 'MyOwn',
       },
+      registerWithEureka: true,
+      fetchRegistry: true,
     },
     //retry 10 time for 3 minute 20 seconds.
     eureka: {
@@ -34,9 +36,8 @@ exports.registerWithEureka = function(appName, PORT) {
 client.logger.level('debug')
 
 client.start( error => {
-    console.log(error || "user service registered")
+    console.log(error || `${appName} service registered`)
 });
-
 
 
 function exitHandler(options, exitCode) {
@@ -58,4 +59,6 @@ client.on('started', () => {
 })
 
 process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+
+
 };
