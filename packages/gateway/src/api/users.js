@@ -33,7 +33,6 @@ app.post("/users/login", async (req, res) => {
     request.post({
         headers: {'content-type': 'application/json'},
         url: 'http://localhost:3004/users/login',
-        method: 'POST',
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
@@ -73,13 +72,39 @@ app.post("/users/logoutAll", auth, async (req, res) => {
 
 
 app.get("/users/profile", auth, async  (req, res) => {
-    console.log('Im here')
-    request.get({
-        url: 'http://localhost:3004/users/profile',
+    request.delete({
+        headers: {'Authorization': req.header('Authorization')},
+        url: 'http://localhost:3004/users/profile'
     }, (error, response, body) => {
         if (error) {
-            console.log(error)
-            res.status(500).send(error)
+            res.send(error)
+        } else {
+            res.send(response.body)
+        }
+    })   
+})
+
+app.delete("/users/profile", auth, async  (req, res) => {
+    request.delete({
+        headers: {'Authorization': req.header('Authorization')},
+        url: 'http://localhost:3004/users/profile'
+    }, (error, response, body) => {
+        if (error) {
+            res.send(error)
+        } else {
+            res.send(response.body)
+        }
+    })   
+})
+
+app.patch("/users/profile", auth, async  (req, res) => {
+    request.patch({
+        headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
+        url: 'http://localhost:3004/users/profile',
+        body: JSON.stringify(req.body)
+    }, (error, response, body) => {
+        if (error) {
+            res.send(error)
         } else {
             res.send(response.body)
         }

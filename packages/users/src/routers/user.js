@@ -53,11 +53,13 @@ router.post('/users/logoutAll', async (req, res) => {
 })
 
 router.get('/users/profile', async (req, res) => {
-    res.send(req.user)
-    console.log(req.user)
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    const user = await User.findOne({'tokens.token': reqToken})
+    res.send(user)
 })
 
 router.patch('/users/profile', async (req, res) => {
+    console.log('req', req.body)
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'alias', 'email', 'password']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -66,19 +68,25 @@ router.patch('/users/profile', async (req, res) => {
         return res.status(400).send({ error: 'Invalid updates!' })
     }
 
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    const user = await User.findOne({'tokens.token': reqToken})
+   
     try {
-        updates.forEach((update) => req.user[update] = req.body[update])
-        await req.user.save()
-        res.send(req.user)
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
+        res.send(user)
     } catch (e) {
         res.status(400).send(e)
     }
 })
 
 router.delete('/users/profile', async (req, res) => {
+    console.log('delete')
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    const user = await User.findOne({'tokens.token': reqToken})
     try {
-        await req.user.remove()
-        res.send(req.user)
+        await user.remove()
+        res.send(user)
     } catch (e) {
         res.status(500).send()
     }
