@@ -1,46 +1,21 @@
 const express = require('express')
 const Location = require('../models/location')
 const Proposal = require('../../../proposals/src/models/proposal')
-const {auth, access} = require('../../../common/src/middleware/auth')
-const geocode = require('../utils/geocode')
-const mongoose = require('mongoose')
+//const {auth, access} = require('../../../common/src/middleware/auth')
 const router = new express.Router()
 
-router.post('/locations', auth, async (req, res) => {
 
-    geocode(req.body.address, (error, {latitude, longitude, locationName} = {}) => {
-        if (error) {
-            return res.send({error})
-        }
-        const proposal = new Proposal({
-            ...req.body,
-            locationId: new mongoose.Types.ObjectId(),
-            createdBy: req.user._id,
-            updatedBy: req.user._id,
-            location: {
-                type: "Point",
-                coordinates: [longitude, latitude]
-            }
-        })
-
-        try {
-            proposal.save()
-            res.status(202).set('Location', `/proposals/${proposal._id}`).send({status : proposal.status})
-        } catch (e) {
-            res.status(400).send(e)
-        }
-    })
-        
-})
 
 // @route     GET /locations?latitude=latitude&longitude=longitude&distance=distance
-router.get('/locations', auth, async (req, res) => {
+router.get('/locations', async (req, res) => {
 
     const lat = req.query.latitude
     const lng = req.query.longitude
 
     const distance = req.query.distance || 1
     const radius = distance / 3963
+    
+    console.log(lat, lng, distance, radius)
 
     try {
         const locations = await Location.find({
@@ -52,7 +27,7 @@ router.get('/locations', auth, async (req, res) => {
     }
 })
 
-router.get('/locations/:id', auth, async (req, res) => {
+router.get('/locations/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
@@ -71,7 +46,7 @@ router.get('/locations/:id', auth, async (req, res) => {
 
 
 
-router.patch('/locations/:id', auth, async (req, res) => {
+router.patch('/locations/:id',  async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 
                             'address', 
@@ -103,7 +78,7 @@ router.patch('/locations/:id', auth, async (req, res) => {
     }
 })
 
-router.delete('/locations/:id', auth, access('admin'), async (req, res) => {
+router.delete('/locations/:id',  async (req, res) => {
     try {
         const location = await Location.findOneAndDelete({ _id: req.params.id })
 

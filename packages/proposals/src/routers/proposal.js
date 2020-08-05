@@ -1,10 +1,41 @@
 const express = require('express')
 const Location = require('../../../locations/src/models/location')
 const Proposal = require('../models/proposal')
-const {auth, access} = require('../../../common/src/middleware/auth')
-const router = new express.Router()
+const mongoose = require('mongoose')
 
-router.patch('/proposals/:id', auth, access('admin'), async (req, res) => {
+//const {auth, access} = require('../../../common/src/middleware/auth')
+const router = new express.Router()
+const geocode = require('../../../common/src/utils/geocode')
+
+router.post('/proposals', async (req, res) => {
+    const user = req.header('user')
+    geocode(req.body.address, (error, {latitude, longitude, locationName} = {}) => {
+        if (error) {
+            return res.send({error})
+        }
+        const proposal = new Proposal({
+            ...req.body,
+            locationId: new mongoose.Types.ObjectId(),
+            createdBy: JSON.parse(user),
+            updatedBy: JSON.parse(user),
+            location: {
+                type: "Point",
+                coordinates: [longitude, latitude]
+            }
+        })
+
+        try {
+            proposal.save()
+            res.status(202).set('Location', `/proposals/${proposal._id}`).send({status : proposal.status})
+        } catch (e) {
+            res.status(400).send(e)
+        }
+    })
+        
+})
+
+//auth, access('admin'),
+router.patch('/proposals/:id',  async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['status']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -61,7 +92,8 @@ router.patch('/proposals/:id', auth, access('admin'), async (req, res) => {
     }
 })
 
-router.get('/proposals', auth, access('admin'), async (req, res) => {
+//auth, access('admin'),
+router.get('/proposals',  async (req, res) => {
     const match = {}
     const sort = {}
 
@@ -82,7 +114,8 @@ router.get('/proposals', auth, access('admin'), async (req, res) => {
     }
 })
 
-router.get('/proposals/:id', auth, async (req, res) => {
+//auth, 
+router.get('/proposals/:id',  async (req, res) => {
     const _id = req.params.id
 
     try {
@@ -101,7 +134,8 @@ router.get('/proposals/:id', auth, async (req, res) => {
     }
 })
 
-router.delete('/proposals/:id', auth, access('admin'), async (req, res) => {
+//auth, access('admin'),
+router.delete('/proposals/:id',  async (req, res) => {
     try {
         const proposal = await Proposal.findOneAndDelete({ _id: req.params.id })
 

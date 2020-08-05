@@ -28,7 +28,6 @@ router.post('/users/logout', async (req, res) => {
     try {
         const reqToken = req.header('Authorization').replace('Bearer ', '')
         const user = await User.findOne({'tokens.token': reqToken})
-        console.log ('user', user)
         user.tokens = user.tokens.filter((token) => {
             return token.token !== reqToken
         })
@@ -44,7 +43,6 @@ router.post('/users/logoutAll', async (req, res) => {
         const reqToken = req.header('Authorization').replace('Bearer ', '')
         const user = await User.findOne({'tokens.token': reqToken})
         user.tokens = []
-        console.log('user', user)
         await user.save()
         res.send()
     } catch (e) {
@@ -59,7 +57,6 @@ router.get('/users/profile', async (req, res) => {
 })
 
 router.patch('/users/profile', async (req, res) => {
-    console.log('req', req.body)
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'alias', 'email', 'password']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -81,7 +78,6 @@ router.patch('/users/profile', async (req, res) => {
 })
 
 router.delete('/users/profile', async (req, res) => {
-    console.log('delete')
     const reqToken = req.header('Authorization').replace('Bearer ', '')
     const user = await User.findOne({'tokens.token': reqToken})
     try {

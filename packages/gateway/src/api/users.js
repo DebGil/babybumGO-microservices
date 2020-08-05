@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const {auth, access} = require('../middleware/auth')
 
-const port = process.argv.slice(2)[0];
 const app = express();
 
 app.use(bodyParser.json());
@@ -72,7 +71,7 @@ app.post("/users/logoutAll", auth, async (req, res) => {
 
 
 app.get("/users/profile", auth, async  (req, res) => {
-    request.delete({
+    request.get({
         headers: {'Authorization': req.header('Authorization')},
         url: 'http://localhost:3004/users/profile'
     }, (error, response, body) => {
