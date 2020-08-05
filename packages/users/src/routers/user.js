@@ -27,12 +27,24 @@ router.post('/users/login', async (req, res) => {
 router.post('/users/logout', async (req, res) => {
     try {
         const reqToken = req.header('Authorization').replace('Bearer ', '')
-        const user = await User.findOne({'tokens.token': reqToken})
-        user.tokens = user.tokens.filter((token) => {
-            return token.token !== reqToken
-        })
-        await user.save()        
-        res.send()
+
+        await User.findOne({'tokens.token': reqToken}, async function(e, data){
+            if(e){
+               return (res.status(400).send('Failed'))
+            } else {
+               if (data) {
+                    console.log('user', data)
+                    data.tokens = data.tokens.filter((token) => {
+                        return token.token !== reqToken
+                    })
+                   await data.save()        
+                   res.send(data)
+               } else {
+                    console.log('user not found')
+                    return (res.status(404).send())
+               }
+            }
+         })
     } catch (e) {
         res.status(500).send()
     }
@@ -41,10 +53,23 @@ router.post('/users/logout', async (req, res) => {
 router.post('/users/logoutAll', async (req, res) => {
     try {
         const reqToken = req.header('Authorization').replace('Bearer ', '')
-        const user = await User.findOne({'tokens.token': reqToken})
-        user.tokens = []
-        await user.save()
-        res.send()
+        
+        await User.findOne({'tokens.token': reqToken}, async function(e, data){
+            if(e){
+               return (res.status(400).send('Failed'))
+            } else {
+               if (data) {
+                    data.tokens = []
+                    await data.save()
+                    res.send()
+               } else {
+                    console.log('user not found')
+                    return (res.status(404).send())
+               }
+            }
+         })
+
+        
     } catch (e) {
         res.status(500).send()
     }
@@ -52,8 +77,21 @@ router.post('/users/logoutAll', async (req, res) => {
 
 router.get('/users/profile', async (req, res) => {
     const reqToken = req.header('Authorization').replace('Bearer ', '')
-    const user = await User.findOne({'tokens.token': reqToken})
-    res.send(user)
+    await User.findOne({'tokens.token': reqToken},function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+               console.log('user', data)
+               return (res.send(data))
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
+   
+
 })
 
 router.patch('/users/profile', async (req, res) => {
@@ -66,23 +104,83 @@ router.patch('/users/profile', async (req, res) => {
     }
 
     const reqToken = req.header('Authorization').replace('Bearer ', '')
-    const user = await User.findOne({'tokens.token': reqToken})
+    await User.findOne({'tokens.token': reqToken}, async function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+                try {
+                    updates.forEach((update) => data[update] = req.body[update])
+                    await data.save()
+                    res.send(data)
+                } catch (e) {
+                    res.status(400).send(e)
+                }
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
    
-    try {
-        updates.forEach((update) => user[update] = req.body[update])
-        await user.save()
-        res.send(user)
-    } catch (e) {
-        res.status(400).send(e)
+   
+    
+})
+
+router.patch('/users/profile/:id', async (req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'alias', 'email', 'password', 'role']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' })
     }
+
+    await User.findOne({_id: req.params.id}, async function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+                try {
+                    //as the role is signed using JWT the tokens are no longer valid
+                    data.tokens = []
+                    updates.forEach((update) => data[update] = req.body[update])
+                    await data.save()
+                    res.send(data)
+                } catch (e) {
+                    res.status(400).send(e)
+                }
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
+
+
 })
 
 router.delete('/users/profile', async (req, res) => {
     const reqToken = req.header('Authorization').replace('Bearer ', '')
-    const user = await User.findOne({'tokens.token': reqToken})
+    await User.findOne({'tokens.token': reqToken}, async function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+                try {
+                    await data.remove()
+                    res.send(data)
+                } catch (e) {
+                    res.status(500).send()
+                }
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
     try {
-        await user.remove()
-        res.send(user)
+        
     } catch (e) {
         res.status(500).send()
     }

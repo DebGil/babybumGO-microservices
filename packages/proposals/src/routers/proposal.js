@@ -3,7 +3,6 @@ const Location = require('../../../locations/src/models/location')
 const Proposal = require('../models/proposal')
 const mongoose = require('mongoose')
 
-//const {auth, access} = require('../../../common/src/middleware/auth')
 const router = new express.Router()
 const geocode = require('../../../common/src/utils/geocode')
 
@@ -34,7 +33,6 @@ router.post('/proposals', async (req, res) => {
         
 })
 
-//auth, access('admin'),
 router.patch('/proposals/:id',  async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['status']
@@ -92,11 +90,10 @@ router.patch('/proposals/:id',  async (req, res) => {
     }
 })
 
-//auth, access('admin'),
-router.get('/proposals',  async (req, res) => {
+router.get('/proposals', async (req, res) => {
     const match = {}
     const sort = {}
-
+    console.log('quer', req.query)
     if (req.query.status) {
         match.status = req.query.status 
     }
@@ -114,7 +111,6 @@ router.get('/proposals',  async (req, res) => {
     }
 })
 
-//auth, 
 router.get('/proposals/:id',  async (req, res) => {
     const _id = req.params.id
 
@@ -134,7 +130,6 @@ router.get('/proposals/:id',  async (req, res) => {
     }
 })
 
-//auth, access('admin'),
 router.delete('/proposals/:id',  async (req, res) => {
     try {
         const proposal = await Proposal.findOneAndDelete({ _id: req.params.id })

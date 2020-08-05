@@ -78,7 +78,7 @@ app.get("/users/profile", auth, async  (req, res) => {
         if (error) {
             res.send(error)
         } else {
-            res.send(response.body)
+            res.status(response.statusCode).send(response.body)
         }
     })   
 })
@@ -100,6 +100,20 @@ app.patch("/users/profile", auth, async  (req, res) => {
     request.patch({
         headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
         url: 'http://localhost:3004/users/profile',
+        body: JSON.stringify(req.body)
+    }, (error, response, body) => {
+        if (error) {
+            res.send(error)
+        } else {
+            res.send(response.body)
+        }
+    })   
+})
+
+app.patch("/users/profile/:id", auth, access('admin'), async  (req, res) => {
+    request.patch({
+        headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
+        url: 'http://localhost:3004/users/profile/'+req.params.id,
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
