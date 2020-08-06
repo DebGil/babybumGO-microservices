@@ -34,49 +34,13 @@ router.post('/proposals', async (req, res) => {
 })
 
 router.patch('/proposals/:id',  async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['status']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
-
+    
     try {
+        const updates = Object.keys(req.body)
+
         const proposal = await Proposal.findOne({ _id: req.params.id})
-        if (!proposal) {
-            return res.status(404).send()
-        }
-
-        const location = await Location.findOne({ _id: proposal.locationId}) 
-
-        if (req.body['status'] === 'Approved' && !location) {
-            const location = new Location({
-                _id: proposal.locationId,
-                name: proposal.name,
-                address: proposal.address,
-                additionalInfo: proposal.additionalInfo, 
-                location: proposal.location,
-                createdBy: proposal.createdBy,
-                updatedBy: proposal.updatedBy,
-                approvedAt: new Date(),
-                approvedBy: req.user._id
-            }) 
-
-            await location.save()
-        } else if ( req.body['status'] === 'Approved' && location) {
-
-            const proposalUpdates = Object.keys(proposal.toJSON())
-            const allowedLocationUpdates = ['name', 'address', 'additionalInfo', 'location']
-            const filteredLocationUpdates = allowedLocationUpdates.filter((function(item) {
-                return proposalUpdates.includes(item); 
-              }));
-              console.log(filteredLocationUpdates)
-              filteredLocationUpdates.forEach((filteredLocationUpdate) => location[filteredLocationUpdate] = proposal[filteredLocationUpdate])
-            console.log(location)
-            await location.save()
-        }
-
+        console.log('prop', proposal)
+        
         updates.forEach((update) => proposal[update] = req.body[update])
         
         const tomorrow = new Date()
@@ -88,6 +52,52 @@ router.patch('/proposals/:id',  async (req, res) => {
     } catch (e) {
         res.status(400).send(e)
     }
+    // try {
+    //     const proposal = await Proposal.findOne({ _id: req.params.id})
+    //     if (!proposal) {
+    //         return res.status(404).send()
+    //     }
+    //     console.log('prop', proposal)
+    //     const location = await Location.findOne({ _id: proposal.locationId}) 
+
+    //     if (req.body['status'] === 'Approved' && !location) {
+    //         const location = new Location({
+    //             _id: proposal.locationId,
+    //             name: proposal.name,
+    //             address: proposal.address,
+    //             additionalInfo: proposal.additionalInfo, 
+    //             location: proposal.location,
+    //             createdBy: proposal.createdBy,
+    //             updatedBy: proposal.updatedBy,
+    //             approvedAt: new Date(),
+    //             approvedBy: req.user._id
+    //         }) 
+
+    //         await location.save()
+    //     } else if ( req.body['status'] === 'Approved' && location) {
+
+    //         const proposalUpdates = Object.keys(proposal.toJSON())
+    //         const allowedLocationUpdates = ['name', 'address', 'additionalInfo', 'location']
+    //         const filteredLocationUpdates = allowedLocationUpdates.filter((function(item) {
+    //             return proposalUpdates.includes(item); 
+    //           }));
+    //           console.log(filteredLocationUpdates)
+    //           filteredLocationUpdates.forEach((filteredLocationUpdate) => location[filteredLocationUpdate] = proposal[filteredLocationUpdate])
+    //         console.log(location)
+    //         await location.save()
+    //     }
+
+    //     updates.forEach((update) => proposal[update] = req.body[update])
+        
+    //     const tomorrow = new Date()
+    //     tomorrow.setDate(tomorrow.getDate() + 1);
+    //     proposal['expireAt'] = tomorrow
+       
+    //     await proposal.save()
+    //     res.send(proposal)
+    // } catch (e) {
+    //     res.status(400).send(e)
+    // }
 })
 
 router.get('/proposals', async (req, res) => {
@@ -112,6 +122,7 @@ router.get('/proposals', async (req, res) => {
 })
 
 router.get('/proposals/:id',  async (req, res) => {
+    console.log('getting proposal ' , req.params.id)
     const _id = req.params.id
 
     try {
@@ -121,7 +132,7 @@ router.get('/proposals/:id',  async (req, res) => {
             return res.status(404).send()
         }
         if (proposal.status === 'Approved') {
-            res.status(303).set('Location', `/locations/${proposal.locationId}`).send({status : proposal.status})
+            res.status(303).set('Location', `/locations/${proposal.locationId}`).send(proposal)
         } else {
             res.send(proposal)
         }

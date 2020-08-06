@@ -47,7 +47,8 @@ const locationSchema = new mongoose.Schema({
     },
     approvedAt: {
         type: Date,
-        required: false
+        required: false,
+        default: Date.now()
     },
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,

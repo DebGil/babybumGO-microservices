@@ -28,22 +28,45 @@ app.post("/locations", auth, async (req, res) => {
 })
 
 app.patch("/locations/:id", auth, async (req, res) => {
-    request.patch({
-        headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
-        url: 'http://localhost:3001/locations/' + req.params.id,
-        body: JSON.stringify(req.body)
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 
+                            'address', 
+                            'additionalInfo', 
+                            'location']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' })
+    }
+    
+    request.get({
+        headers: {'Authorization': req.header('Authorization')},
+        url: 'http://localhost:3001/locations/'+ req.params.id
     }, (error, response, body) => {
         if (error) {
-            return error
-        } 
-        const responseObject = JSON.parse(body)
-        try {
-            res.status(202).set('Location', response.headers.location).send(body)
-        } catch (e) {
-            res.status(400).send(e)
+            res.status(404).send(error)
+        } else {
+            let  body = req.body
+            body = { ...body, locationId: req.params.id};
+            request.post({
+                headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
+                url: 'http://localhost:3002/proposals/',
+                body: JSON.stringify(body)
+            }, (error, response, body) => {
+                if (error) {
+                    return error
+                } 
+                const responseObject = JSON.parse(body)
+                try {
+                    res.status(202).set('Location', response.headers.location).send(body)
+                } catch (e) {
+                    res.status(400).send(e)
+                }
+                
+            }) 
         }
-        
-    })   
+    }) 
+      
 })
 
 app.get("/locations", auth, async  (req, res) => {

@@ -1,14 +1,36 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const Location = require('../models/location')
 const Proposal = require('../../../proposals/src/models/proposal')
 //const {auth, access} = require('../../../common/src/middleware/auth')
 const router = new express.Router()
 
 
+router.post('/locations', async (req, res) => {
+    const user = req.header('user')
+    req.body._id = req.body.locationId
+    delete req.body.locationId
+    delete req.body.status
+    const location = new Location({
+         ...req.body,
+         approvedBy: mongoose.Types.ObjectId(user._id)
+         //ojo locationid
+    })
+
+
+    try {
+        //location.save()
+        res.status(201).send(location)
+        //res.status(202).set('Location', `/proposals/${proposal._id}`).send({status : proposal.status})
+    } catch (e) {
+        res.status(400).send(e)
+    }
+    
+})
 
 // @route     GET /locations?latitude=latitude&longitude=longitude&distance=distance
 router.get('/locations', async (req, res) => {
-
+    console.log('getlocations')
     const lat = req.query.latitude
     const lng = req.query.longitude
 
@@ -28,8 +50,10 @@ router.get('/locations', async (req, res) => {
 })
 
 router.get('/locations/:id', async (req, res) => {
-    const _id = req.params.id
+    
 
+    const _id = req.params.id
+    console.log('getlocation', _id)
     try {
         const location = await Location.findOne({ _id})
 
@@ -47,16 +71,8 @@ router.get('/locations/:id', async (req, res) => {
 
 
 router.patch('/locations/:id',  async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 
-                            'address', 
-                            'additionalInfo', 
-                            'location']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    console.log('patchlocation')
 
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
 
     try {
         const location = await Location.findOne({ _id: req.params.id})
@@ -79,6 +95,8 @@ router.patch('/locations/:id',  async (req, res) => {
 })
 
 router.delete('/locations/:id',  async (req, res) => {
+    console.log('de;etelocations')
+
     try {
         const location = await Location.findOneAndDelete({ _id: req.params.id })
 
