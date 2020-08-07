@@ -30,7 +30,8 @@ app.get("/proposals/:id", auth, async  (req, res) => {
         if (error) {
             res.send(error)
         } else {
-            res.send(response.body)
+            res.status(response.statusCode).set('location',response.headers.path).send(response.body)
+            
         }
     })   
 })
@@ -48,6 +49,7 @@ app.delete("/proposals/:id", auth, access('admin'), async  (req, res) => {
     })   
 })
 
+//approve or reject
 app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['status']
@@ -56,34 +58,60 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid updates!' })
     }
+    
+    const proposalId = req.params.id
+    const proposalBody = req.body
 
     request.get({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3002/proposals/'+ req.params.id
+        url: 'http://localhost:3002/proposals/'+ proposalId
     }, (error, response, bodyGetProposal) => {
         if (error) {
-            res.send(error)
+            return res.send(error)
+        } if ((response.statusCode !== 200) && (response.statusCode !== 303) ){
+            return res.status(response.statusCode).send({"error":"proposal does not exist"})
         } else {
+            const locationId = JSON.parse(bodyGetProposal).locationId
             //res.send(response.body)
-
+            if (JSON.parse(bodyGetProposal).status !== 'Under Review') {
+                return res.status(400).send({"error":"proposal status cannot be updated"})
+            }
             console.log('response', bodyGetProposal)
-             if (bodyGetProposal && req.body['status'] === 'Approved') {
+            if (req.body['status'] === 'Approved') {
 
-                console.log('approving', JSON.parse(bodyGetProposal).locationId)
+                console.log('approving', locationId)
                 request.get({
                     headers: {'Authorization': req.header('Authorization')},
-                    url: 'http://localhost:3001/locations/'+ JSON.parse(bodyGetProposal).locationId
+                    url: 'http://localhost:3001/locations/'+ locationId
                 }, (error, response, bodyLocation) => {
                        console.log('body of location', bodyLocation)
                     if (error) {
                         res.send(error)
                     } else {
-                        if (bodyLocation) {
+                        if (response.statusCode === 200) {
                             console.log('there is a location', bodyLocation)
-                            //patch
-                        } else {
+                            console.log('body propsal', bodyGetProposal)
+                            request.patch({
+                                headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
+                                url: 'http://localhost:3001/locations/'+ locationId,
+                                body: bodyGetProposal
+                            }, (error, response, bodyPostLocation) => {
+                                console.log('patch to location returned')
+                                if (error) {
+                                    return error
+                                } 
+                                const responseObject = JSON.parse(bodyPostLocation)
+                                try {
+                                //    res.status(202).set('Location', response.headers.location).send(bodyPostLocation)
+                                                                     
+                                } catch (e) {
+                                    res.status(400).send(e)
+                                }
+                                
+                            })                        
+                        } else if (response.statusCode === 404) {
                             console.log('there is no location')
-                            console.log('req.user', req.user)
+                            console.log('bodyGetProposal', bodyGetProposal)
                             request.post({
                                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
                                 url: 'http://localhost:3001/locations',
@@ -94,34 +122,32 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                                     return error
                                 } 
                                 const responseObject = JSON.parse(bodyPostLocation)
-                                try {
-                                //    res.status(202).set('Location', response.headers.location).send(bodyPostLocation)
-                                } catch (e) {
-                                    res.status(400).send(e)
-                                }
+         
                                 
                             })
+                        } else {
+                            res.status(response.statusCode).send({"error": "error retrieving location"})
                         }
 
                     }
                 })  
-             }
-            // request.patch({
-            //     headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
-            //     url: 'http://localhost:3002/proposals/' + req.params.id,
-            //     body: JSON.stringify(req.body)
-            // }, (error, response, body) => {
-            //     if (error) {
-            //         return error
-            //     } 
-            //     const responseObject = JSON.parse(body)
-            //     try {
-            //         res.status(202).set('Location', response.headers.location).send(body)
-            //     } catch (e) {
-            //         res.status(400).send(e)
-            //     }
+            }
+            request.patch({
+                headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
+                url: 'http://localhost:3002/proposals/'+ proposalId,
+                body: JSON.stringify(proposalBody)
+            }, (error, response, body) => {
+                if (error) {
+                    return error
+                } 
+                const responseObject = JSON.parse(body)
+                try {
+                    res.status(200).send(body)
+                } catch (e) {
+                    res.status(400).send(e)
+                }
                 
-            // })
+            })   
         }
     })
 

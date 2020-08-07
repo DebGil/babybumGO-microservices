@@ -47,6 +47,7 @@ app.patch("/locations/:id", auth, async (req, res) => {
             res.status(404).send(error)
         } else {
             let  body = req.body
+            console.log('body', body)
             body = { ...body, locationId: req.params.id};
             request.post({
                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},

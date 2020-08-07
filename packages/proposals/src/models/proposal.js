@@ -23,6 +23,7 @@ const proposalSchema = new mongoose.Schema({
         maxlength: 100
     },
     location: {
+        required: false,
         // GeoJSON Point
         type: {
           type: String,

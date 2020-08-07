@@ -7,6 +7,7 @@ const router = new express.Router()
 
 
 router.post('/locations', async (req, res) => {
+    console.log('post locatios')
     const user = req.header('user')
     req.body._id = req.body.locationId
     delete req.body.locationId
@@ -16,10 +17,10 @@ router.post('/locations', async (req, res) => {
          approvedBy: mongoose.Types.ObjectId(user._id)
          //ojo locationid
     })
-
+    console.log('new loc', req.body)
 
     try {
-        //location.save()
+        location.save()
         res.status(201).send(location)
         //res.status(202).set('Location', `/proposals/${proposal._id}`).send({status : proposal.status})
     } catch (e) {
@@ -60,8 +61,8 @@ router.get('/locations/:id', async (req, res) => {
         if (!location) {
             return res.status(404).send()
         }
-        location.viewCount++
-        await location.save()
+  //      location.viewCount++
+    //    await location.save()
         res.send(location)
     } catch (e) {
         res.status(500).send()
@@ -71,27 +72,43 @@ router.get('/locations/:id', async (req, res) => {
 
 
 router.patch('/locations/:id',  async (req, res) => {
-    console.log('patchlocation')
+    console.log('patchlocation', req.body)
 
 
     try {
+        console.log('id',req.params.id )
         const location = await Location.findOne({ _id: req.params.id})
+        console.log(location)
         if (!location) {
             return res.status(404).send()
         }
 
-        const proposal = new Proposal({
-            locationId: req.params.id,
-            ...req.body,
-            createdBy: req.user._id,
-            updatedBy: req.user._id
-        })
 
-        await proposal.save()
-        res.status(202).send(proposal)
+        const proposalUpdates = Object.keys(req.body)
+        console.log('proposal updates', proposalUpdates)
+        const allowedLocationUpdates = ['name', 'address', 'additionalInfo', 'location']
+        const filteredLocationUpdates = allowedLocationUpdates.filter((function(item) {
+            return proposalUpdates.includes(item); 
+        }));
+        console.log('filtered', filteredLocationUpdates)
+        filteredLocationUpdates.forEach((filteredLocationUpdate) => location[filteredLocationUpdate] = req.body[filteredLocationUpdate])
+        console.log('location', location)
+        await location.save()
+        res.send(location)
+ 
     } catch (e) {
         res.status(400).send(e)
     }
+
+    
+
+
+  
+
+
+        
+
+
 })
 
 router.delete('/locations/:id',  async (req, res) => {
