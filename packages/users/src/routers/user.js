@@ -95,14 +95,6 @@ router.get('/users/profile', async (req, res) => {
 })
 
 router.patch('/users/profile', async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'alias', 'email', 'password']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
-
     const reqToken = req.header('Authorization').replace('Bearer ', '')
     await User.findOne({'tokens.token': reqToken}, async function(e, data){
         if(e){
@@ -128,14 +120,7 @@ router.patch('/users/profile', async (req, res) => {
 })
 
 router.patch('/users/profile/:id', async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'alias', 'email', 'password', 'role']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
-
+    
     await User.findOne({_id: req.params.id}, async function(e, data){
         if(e){
            return (res.status(400).send('Failed'))

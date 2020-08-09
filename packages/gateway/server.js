@@ -14,6 +14,7 @@ const app = express()
 app.use(users)
 app.use(locations)
 app.use(proposals)
+app.use(reviews)
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)

@@ -1,14 +1,17 @@
 const express = require('express')
 const Review = require('../models/review')
-const {auth, access} = require('../../../common/src/middleware/auth')
 const mongoose = require('mongoose')
 const router = new express.Router()
 
-router.post('/reviews', auth, async (req, res) => {
+//auth
+router.post('/reviews', async (req, res) => {
+    const user = JSON.parse(req.header('user'))._id
+
     const review = new Review({
         ...req.body,
-        createdBy: req.user._id
+        createdBy: new mongoose.Types.ObjectId(user)
     })
+    console.log ('review', review)
 
     try {
         await review.save()
@@ -19,14 +22,18 @@ router.post('/reviews', auth, async (req, res) => {
 })
 
 //      GET /reviews?locationId=id&rating=rating
-// GET /tasks?limit=10&skip=20
-// GET /tasks?sortBy=createdAt:desc
-router.get('/reviews', auth, async (req, res) => {
+// GET /reviews?limit=10&skip=20
+// GET /reviews?sortBy=createdAt:desc
+router.get('/reviews', async (req, res) => {
+
     const match = {}
     const sort = {}
 
     if (req.query.rating) {
         match.rating = req.query.rating 
+    }
+
+    if (req.query.locationId) {
         match.locationId = req.query.locationId
     }
     
@@ -51,7 +58,7 @@ router.get('/reviews', auth, async (req, res) => {
 
 })
 
-router.get('/reviews/:id', auth, async (req, res) => {
+router.get('/reviews/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
@@ -67,23 +74,21 @@ router.get('/reviews/:id', auth, async (req, res) => {
     }
 })
 
-router.patch('/reviews/:id', auth, async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['text', 'rating']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
-
+//auth
+router.patch('/reviews/:id', async (req, res) => {
+    const user = JSON.parse(req.header('user'))._id
     try {
-        const review = await Review.findOne({ _id: req.params.id, createdBy: req.user._id})
+        const review = await Review.findOne({ _id: req.params.id, createdBy: user})
 
         if (!review) {
             return res.status(404).send()
         }
 
+        const updates = Object.keys(req.body)
+        console.log('proposal updates', updates)
+
         updates.forEach((update) => review[update] = req.body[update])
+
         await review.save()
         res.send(review)
     } catch (e) {
@@ -91,11 +96,14 @@ router.patch('/reviews/:id', auth, async (req, res) => {
     }
 })
 
-router.delete('/reviews/:id', auth, async (req, res) => {
-   // const review = new Review()
+router.delete('/reviews/:id', async (req, res) => {
+    const user = JSON.parse(req.header('user'))._id
+    const role = JSON.parse(req.header('user')).role
+    
+    console.log('user', user, role)
     try {
         
-        const review = (req.user.role === 'admin') ? await Review.findOneAndDelete({ _id: req.params.id }) : await Review.findOneAndDelete({ _id: req.params.id, createdBy: req.user._id });
+        const review = (role === 'admin') ? await Review.findOneAndDelete({ _id: req.params.id }) : await Review.findOneAndDelete({ _id: req.params.id, createdBy: user });
 
         if (!review) {
             res.status(404).send()

@@ -97,6 +97,13 @@ app.delete("/users/profile", auth, async  (req, res) => {
 })
 
 app.patch("/users/profile", auth, async  (req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'alias', 'email', 'password']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' })
+    }
     request.patch({
         headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
         url: 'http://localhost:3004/users/profile',
@@ -111,6 +118,13 @@ app.patch("/users/profile", auth, async  (req, res) => {
 })
 
 app.patch("/users/profile/:id", auth, access('admin'), async  (req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'alias', 'email', 'password', 'role']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' })
+    }
     request.patch({
         headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
         url: 'http://localhost:3004/users/profile/'+req.params.id,

@@ -71,7 +71,13 @@ app.patch("/locations/:id", auth, async (req, res) => {
 })
 
 app.get("/locations", auth, async  (req, res) => {
-    const url = 'http://localhost:3001/locations?latitude='+ req.query.latitude+'&longitude='+req.query.longitude+'&distance='+req.query.distance
+    // var url = 'http://localhost:3001/locations'
+    // if (req.query.latitude ) url = url + '?latitude=' + req.query.latitude
+    // if (req.query.longitude ) url = url + '&longitude=' + req.query.longitude
+    // if (req.query.distance ) url = url + '?distance=' + req.query.distance
+
+
+     const url = 'http://localhost:3001/locations?latitude='+ req.query.latitude+'&longitude='+req.query.longitude+'&distance='+req.query.distance
     console.log(url)
     request.get({
         headers: {'Authorization': req.header('Authorization')},
