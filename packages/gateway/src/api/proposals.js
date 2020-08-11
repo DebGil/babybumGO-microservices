@@ -11,7 +11,13 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/proposals", auth, access('admin'), async  (req, res) => {
-    const url = urlProposals + '/proposals?status='+ req.query.status+'&sortBy='+req.query.sortBy+'&limit='+req.query.limit
+
+    var url = urlProposals + '/proposals'
+    if (req.query.status || req.query.sortBy || req.query.limit) url = url + '?'
+    if (req.query.status ) url = url + 'status=' + req.query.status + '&'
+    if (req.query.sortBy ) url = url + 'sortBy=' + req.query.sortBy + '&'
+    if (req.query.limit ) url = url + 'limit=' + req.query.limit 
+
     console.log(url)
     request.get({
         headers: {'Authorization': req.header('Authorization')},
@@ -53,7 +59,7 @@ app.delete("/proposals/:id", auth, access('admin'), async  (req, res) => {
 })
 
 //approve or reject
-app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
+app.put("/proposals/:id", auth, access('admin'), async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['status']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -94,12 +100,11 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                         if (response.statusCode === 200) {
                             console.log('there is a location', bodyLocation)
                             console.log('body propsal', bodyGetProposal)
-                            request.patch({
+                            request.put({
                                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
                                 url: urlLocations + '/locations/'+ locationId,
                                 body: bodyGetProposal
                             }, (error, response, bodyPostLocation) => {
-                                console.log('patch to location returned')
                                 if (error) {
                                     return error
                                 } 
@@ -135,7 +140,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                     }
                 })  
             }
-            request.patch({
+            request.put({
                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
                 url: urlProposals + '/proposals/'+ proposalId,
                 body: JSON.stringify(proposalBody)

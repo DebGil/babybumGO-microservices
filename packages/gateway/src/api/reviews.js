@@ -71,7 +71,7 @@ app.post("/reviews", auth, async (req, res) => {
         } 
         const responseObject = JSON.parse(body)
         try {
-            res.status(202).send(body)
+            res.status(response.statusCode).send(body)
         } catch (e) {
             res.status(400).send(e)
         }
@@ -79,16 +79,16 @@ app.post("/reviews", auth, async (req, res) => {
     })   
 })
 
-app.patch("/reviews/:id", auth, async (req, res) => {
+app.put("/reviews/:id", auth, async (req, res) => {
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['text', 'rating']
+    const allowedUpdates = ['locationId', 'text', 'rating']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid updates!' })
     }
     
-    request.patch({
+    request.put({
         headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
         url: urlReviews + '/reviews/' +req.params.id ,
         body: JSON.stringify(req.body)

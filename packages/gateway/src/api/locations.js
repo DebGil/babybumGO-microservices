@@ -32,7 +32,7 @@ app.post("/locations", auth, async (req, res) => {
     })   
 })
 
-app.patch("/locations/:id", auth, async (req, res) => {
+app.put("/locations/:id", auth, async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 
                             'address', 

@@ -26,7 +26,7 @@ router.post('/users/login', async (req, res) => {
 
 router.post('/users/logout', async (req, res) => {
     try {
-        const reqToken = req.header('Authorization').replace('Bearer ', '')
+        const reqToken = req.header('reqToken')
 
         await User.findOne({'tokens.token': reqToken}, async function(e, data){
             if(e){
@@ -52,7 +52,7 @@ router.post('/users/logout', async (req, res) => {
 
 router.post('/users/logoutAll', async (req, res) => {
     try {
-        const reqToken = req.header('Authorization').replace('Bearer ', '')
+        const reqToken = req.header('reqToken')
         
         await User.findOne({'tokens.token': reqToken}, async function(e, data){
             if(e){
@@ -76,9 +76,9 @@ router.post('/users/logoutAll', async (req, res) => {
 })
 
 router.get('/users/profile', async (req, res) => {
-    console.log (req)
+    // console.log (req)
     const reqToken = req.header('reqToken')
-    console.log (reqToken)
+    // console.log (reqToken)
     await User.findOne({'tokens.token': reqToken},function(e, data){
         if(e){
            return (res.status(400).send('Failed'))
@@ -96,8 +96,28 @@ router.get('/users/profile', async (req, res) => {
 
 })
 
+router.get('/users/profile/:id', async (req, res) => {
+    // console.log (req)
+    const reqToken = req.header('reqToken')
+    // console.log (reqToken)
+    await User.findOne({'_id': req.params.id},function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+               console.log('user', data)
+               return (res.send(data))
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
+   
+
+})
+
 router.put('/users/profile', async (req, res) => {
-    console.log('patch')
     const reqToken = req.header('reqToken')
     await User.findOne({'tokens.token': reqToken}, async function(e, data){
         if(e){
@@ -121,7 +141,7 @@ router.put('/users/profile', async (req, res) => {
 })
 
 router.put('/users/profile/:id', async (req, res) => {
-    console.log('patching ',  req.params.id)
+    console.log('id', req.params.id )
     await User.findOne({_id: req.params.id}, async function(e, data){
         console.log('data', data)
         if(e){
@@ -155,6 +175,31 @@ router.put('/users/profile/:id', async (req, res) => {
 router.delete('/users/profile', async (req, res) => {
     const reqToken = req.header('reqToken')
     await User.findOne({'tokens.token': reqToken}, async function(e, data){
+        if(e){
+           return (res.status(400).send('Failed'))
+        }else{
+           if (data) {
+                try {
+                    await data.remove()
+                    res.send(data)
+                } catch (e) {
+                    res.status(500).send()
+                }
+           } else {
+               console.log('user not found')
+               return (res.status(404).send())
+           }
+        }
+     })
+    try {
+        
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
+router.delete('/users/profile/:id', async (req, res) => {
+    await User.findOne({'_id': req.params.id}, async function(e, data){
         if(e){
            return (res.status(400).send('Failed'))
         }else{

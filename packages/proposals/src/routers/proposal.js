@@ -50,7 +50,7 @@ router.post('/proposals', async (req, res) => {
         
 })
 
-router.patch('/proposals/:id',  async (req, res) => {
+router.put('/proposals/:id',  async (req, res) => {
     
     try {
         const updates = Object.keys(req.body)

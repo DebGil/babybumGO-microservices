@@ -74,7 +74,7 @@ router.get('/reviews/:id', async (req, res) => {
 })
 
 //auth
-router.patch('/reviews/:id', async (req, res) => {
+router.put('/reviews/:id', async (req, res) => {
     const user = JSON.parse(req.header('user'))._id
     try {
         const review = await Review.findOne({ _id: req.params.id, createdBy: user})

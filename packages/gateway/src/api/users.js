@@ -40,34 +40,38 @@ app.post("/users/login", async (req, res) => {
         if (error) {
             res.status(400).send(error)
         } else {
-            res.send(body)
+            res.status(response.statusCode).send(body)
         }
     })   
 })
 
 app.post("/users/logout", auth, async (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+
     request.post({
-        headers: {'Authorization': req.header('Authorization')},
+        headers: {'reqToken': reqToken},
         url: urlUsers + '/users/logout'
     }, (error, response, body) => {
         if (error) {
             res.status(500).send(error)
         } else {
-            res.send()
+            res.status(response.statusCode).send()
         }
     })  
 })
 
 
 app.post("/users/logoutAll", auth, async (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+
     request.post({
-        headers: {'Authorization': req.header('Authorization')},
+        headers: {'reqToken': reqToken},
         url: urlUsers + '/users/logoutAll'
     }, (error, response, body) => {
         if (error) {
             res.status(500).send(error)
         } else {
-            res.send()
+            res.status(response.statusCode).send()
         }
     })   
 })
@@ -87,6 +91,20 @@ app.get("/users/profile", auth, async  (req, res) => {
     })   
 })
 
+app.get("/users/profile/:id", auth, access('admin'), async  (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    request.get({
+        headers: {'reqToken': reqToken},
+        url: urlUsers + '/users/profile/' + req.params.id
+    }, (error, response, body) => {
+        if (error) {
+            res.send(error)
+        } else {
+            res.status(response.statusCode).send(response.body)
+        }
+    })   
+})
+
 app.delete("/users/profile", auth, async  (req, res) => {
     const reqToken = req.header('Authorization').replace('Bearer ', '')
     request.delete({
@@ -96,7 +114,7 @@ app.delete("/users/profile", auth, async  (req, res) => {
         if (error) {
             res.send(error)
         } else {
-            res.send(response.body)
+            res.status(response.statusCode).send(response.body)
         }
     })   
 })
@@ -120,7 +138,7 @@ app.put("/users/profile", auth, async  (req, res) => {
         if (error) {
             res.send(error)
         } else {
-            res.send(response.body)
+            res.status(response.statusCode).send(response.body)
         }
     })   
 })
@@ -135,10 +153,10 @@ app.put("/users/profile/:id", auth, access('admin'), async  (req, res) => {
     }
     const reqToken = req.header('Authorization').replace('Bearer ', '')
 
-    console.log('patching ' ,req.params.id)
-const url = urlUsers + '/users/profile/' + req.params.id
-console.log('url', url)
-console.log('body', JSON.stringify(req.body))
+    const url = urlUsers + '/users/profile/' + req.params.id
+     console.log('url', url)
+     console.log('body', JSON.stringify(req.body))
+
     request.put({
         headers: {'content-type': 'application/json', 'reqToken': reqToken},
         url,
@@ -147,7 +165,23 @@ console.log('body', JSON.stringify(req.body))
         if (error) {
             res.send(error)
         } else {
-            res.send(response.body)
+
+            res.status(response.statusCode).send(response.body)
+        }
+    })   
+})
+
+app.delete("/users/profile/:id", auth, access('admin'), async  (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+
+    request.delete({
+        headers: {'reqToken': reqToken},
+        url: urlUsers + '/users/profile/' + req.params.id
+    }, (error, response, body) => {
+        if (error) {
+            res.send(error)
+        } else {
+            res.status(response.statusCode).send(response.body)
         }
     })   
 })

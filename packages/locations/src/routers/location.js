@@ -70,9 +70,7 @@ router.get('/locations/:id', async (req, res) => {
 
 
 
-router.patch('/locations/:id',  async (req, res) => {
-    console.log('patchlocation', req.body)
-
+router.put('/locations/:id',  async (req, res) => {
 
     try {
         console.log('id',req.params.id )
