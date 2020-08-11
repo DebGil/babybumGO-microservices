@@ -25,7 +25,6 @@ router.post('/reviews', async (req, res) => {
 // GET /reviews?limit=10&skip=20
 // GET /reviews?sortBy=createdAt:desc
 router.get('/reviews', async (req, res) => {
-
     const match = {}
     const sort = {}
 

@@ -76,7 +76,9 @@ router.post('/users/logoutAll', async (req, res) => {
 })
 
 router.get('/users/profile', async (req, res) => {
-    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    console.log (req)
+    const reqToken = req.header('reqToken')
+    console.log (reqToken)
     await User.findOne({'tokens.token': reqToken},function(e, data){
         if(e){
            return (res.status(400).send('Failed'))
@@ -94,14 +96,16 @@ router.get('/users/profile', async (req, res) => {
 
 })
 
-router.patch('/users/profile', async (req, res) => {
-    const reqToken = req.header('Authorization').replace('Bearer ', '')
+router.put('/users/profile', async (req, res) => {
+    console.log('patch')
+    const reqToken = req.header('reqToken')
     await User.findOne({'tokens.token': reqToken}, async function(e, data){
         if(e){
            return (res.status(400).send('Failed'))
         }else{
            if (data) {
                 try {
+                    const updates = Object.keys(req.body)
                     updates.forEach((update) => data[update] = req.body[update])
                     await data.save()
                     res.send(data)
@@ -114,14 +118,12 @@ router.patch('/users/profile', async (req, res) => {
            }
         }
      })
-   
-   
-    
 })
 
-router.patch('/users/profile/:id', async (req, res) => {
-    
+router.put('/users/profile/:id', async (req, res) => {
+    console.log('patching ',  req.params.id)
     await User.findOne({_id: req.params.id}, async function(e, data){
+        console.log('data', data)
         if(e){
            return (res.status(400).send('Failed'))
         }else{
@@ -129,6 +131,8 @@ router.patch('/users/profile/:id', async (req, res) => {
                 try {
                     //as the role is signed using JWT the tokens are no longer valid
                     data.tokens = []
+                    const updates = Object.keys(req.body)
+                    console.log('updates', updates)
                     updates.forEach((update) => data[update] = req.body[update])
                     await data.save()
                     res.send(data)
@@ -141,12 +145,15 @@ router.patch('/users/profile/:id', async (req, res) => {
            }
         }
      })
-
-
 })
 
+
+
+
+
+
 router.delete('/users/profile', async (req, res) => {
-    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    const reqToken = req.header('reqToken')
     await User.findOne({'tokens.token': reqToken}, async function(e, data){
         if(e){
            return (res.status(400).send('Failed'))

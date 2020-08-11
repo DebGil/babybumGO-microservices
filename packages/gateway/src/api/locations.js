@@ -5,13 +5,18 @@ const {auth, access} = require('../middleware/auth')
 
 const app = express();
 
+const urlLocations = process.env.ZUUL_URL + '/locations'
+const urlProposals = process.env.ZUUL_URL + '/proposals'
+
+
+
 app.use(bodyParser.json());
 
 
 app.post("/locations", auth, async (req, res) => {
     request.post({
         headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
-        url: 'http://localhost:3002/proposals',
+        url: urlProposals + '/proposals',
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
@@ -41,7 +46,7 @@ app.patch("/locations/:id", auth, async (req, res) => {
     
     request.get({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3001/locations/'+ req.params.id
+        url: urlLocations + '/locations/'+ req.params.id
     }, (error, response, body) => {
         if (error) {
             res.status(404).send(error)
@@ -51,7 +56,7 @@ app.patch("/locations/:id", auth, async (req, res) => {
             body = { ...body, locationId: req.params.id};
             request.post({
                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
-                url: 'http://localhost:3002/proposals/',
+                url: urlProposals + '/proposals',
                 body: JSON.stringify(body)
             }, (error, response, body) => {
                 if (error) {
@@ -77,7 +82,7 @@ app.get("/locations", auth, async  (req, res) => {
     // if (req.query.distance ) url = url + '?distance=' + req.query.distance
 
 
-     const url = 'http://localhost:3001/locations?latitude='+ req.query.latitude+'&longitude='+req.query.longitude+'&distance='+req.query.distance
+    const url = urlLocations + '/locations?latitude='+ req.query.latitude+'&longitude='+req.query.longitude+'&distance='+req.query.distance
     console.log(url)
     request.get({
         headers: {'Authorization': req.header('Authorization')},
@@ -92,7 +97,7 @@ app.get("/locations", auth, async  (req, res) => {
 })
 
 app.get("/locations/:id", auth, async  (req, res) => {
-    const url = 'http://localhost:3001/locations/'+ req.params.id
+    const url = urlLocations + '/locations/'+ req.params.id
     console.log(url)
     request.get({
         headers: {'Authorization': req.header('Authorization')},
@@ -107,7 +112,7 @@ app.get("/locations/:id", auth, async  (req, res) => {
 })
 
 app.delete("/locations/:id", auth, access('admin'), async  (req, res) => {
-    const url = 'http://localhost:3001/locations/'+ req.params.id
+    const url = urlLocations + '/locations/'+ req.params.id
     console.log( req.user)
     request.delete({
         headers: {'Authorization': req.header('Authorization')},

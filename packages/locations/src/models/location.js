@@ -55,11 +55,6 @@ const locationSchema = new mongoose.Schema({
         required: false,
         ref: 'User'
     },
-    viewCount: {
-        type: Number,
-        default: 0,
-        required: false
-    },
     averageRating: {
         type: Number,
         required: false,

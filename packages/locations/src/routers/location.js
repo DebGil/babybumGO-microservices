@@ -61,8 +61,7 @@ router.get('/locations/:id', async (req, res) => {
         if (!location) {
             return res.status(404).send()
         }
-  //      location.viewCount++
-    //    await location.save()
+
         res.send(location)
     } catch (e) {
         res.status(500).send()

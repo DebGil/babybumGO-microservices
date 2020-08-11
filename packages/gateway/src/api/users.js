@@ -6,19 +6,22 @@ const {auth, access} = require('../middleware/auth')
 
 const app = express();
 
+const urlUsers = process.env.ZUUL_URL + '/users'
+
 app.use(bodyParser.json());
 
 
 app.post("/users",  async (req, res) => {
     request.post({
         headers: {'content-type': 'application/json'},
-        url: 'http://localhost:3004/users',
+        url: urlUsers + '/users',
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
             return next(error)
         } 
         const responseObject = JSON.parse(body)
+        console.log(body)
         try {
             res.status(201).send({"_id": responseObject.user._id, "token": responseObject.token})
         } catch (e) {
@@ -31,7 +34,7 @@ app.post("/users",  async (req, res) => {
 app.post("/users/login", async (req, res) => {
     request.post({
         headers: {'content-type': 'application/json'},
-        url: 'http://localhost:3004/users/login',
+        url: urlUsers + '/users/login',
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
@@ -45,7 +48,7 @@ app.post("/users/login", async (req, res) => {
 app.post("/users/logout", auth, async (req, res) => {
     request.post({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/logout'
+        url: urlUsers + '/users/logout'
     }, (error, response, body) => {
         if (error) {
             res.status(500).send(error)
@@ -59,7 +62,7 @@ app.post("/users/logout", auth, async (req, res) => {
 app.post("/users/logoutAll", auth, async (req, res) => {
     request.post({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/logoutAll'
+        url: urlUsers + '/users/logoutAll'
     }, (error, response, body) => {
         if (error) {
             res.status(500).send(error)
@@ -71,9 +74,10 @@ app.post("/users/logoutAll", auth, async (req, res) => {
 
 
 app.get("/users/profile", auth, async  (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
     request.get({
-        headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/profile'
+        headers: {'reqToken': reqToken},
+        url: urlUsers + '/users/profile'
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -84,9 +88,10 @@ app.get("/users/profile", auth, async  (req, res) => {
 })
 
 app.delete("/users/profile", auth, async  (req, res) => {
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
     request.delete({
-        headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/profile'
+        headers: {'reqToken': reqToken},
+        url: urlUsers + '/users/profile'
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -96,7 +101,7 @@ app.delete("/users/profile", auth, async  (req, res) => {
     })   
 })
 
-app.patch("/users/profile", auth, async  (req, res) => {
+app.put("/users/profile", auth, async  (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'alias', 'email', 'password']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -104,9 +109,12 @@ app.patch("/users/profile", auth, async  (req, res) => {
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid updates!' })
     }
-    request.patch({
-        headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/profile',
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+    const url = urlUsers + '/users/profile'
+
+    request.put({
+        headers: {'content-type': 'application/json', 'reqToken': reqToken},
+        url,
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
@@ -117,7 +125,7 @@ app.patch("/users/profile", auth, async  (req, res) => {
     })   
 })
 
-app.patch("/users/profile/:id", auth, access('admin'), async  (req, res) => {
+app.put("/users/profile/:id", auth, access('admin'), async  (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'alias', 'email', 'password', 'role']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -125,9 +133,15 @@ app.patch("/users/profile/:id", auth, access('admin'), async  (req, res) => {
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid updates!' })
     }
-    request.patch({
-        headers: {'content-type': 'application/json', 'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3004/users/profile/'+req.params.id,
+    const reqToken = req.header('Authorization').replace('Bearer ', '')
+
+    console.log('patching ' ,req.params.id)
+const url = urlUsers + '/users/profile/' + req.params.id
+console.log('url', url)
+console.log('body', JSON.stringify(req.body))
+    request.put({
+        headers: {'content-type': 'application/json', 'reqToken': reqToken},
+        url,
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {

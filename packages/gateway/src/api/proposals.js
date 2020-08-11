@@ -3,12 +3,15 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const {auth, access} = require('../middleware/auth')
 
+const urlLocations = process.env.ZUUL_URL + '/locations'
+const urlProposals = process.env.ZUUL_URL + '/proposals'
+
 const app = express();
 
 app.use(bodyParser.json());
 
 app.get("/proposals", auth, access('admin'), async  (req, res) => {
-    const url = 'http://localhost:3002/proposals?status='+ req.query.status+'&sortBy='+req.query.sortBy+'&limit='+req.query.limit
+    const url = urlProposals + '/proposals?status='+ req.query.status+'&sortBy='+req.query.sortBy+'&limit='+req.query.limit
     console.log(url)
     request.get({
         headers: {'Authorization': req.header('Authorization')},
@@ -25,7 +28,7 @@ app.get("/proposals", auth, access('admin'), async  (req, res) => {
 app.get("/proposals/:id", auth, async  (req, res) => {
     request.get({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3002/proposals/'+ req.params.id
+        url: urlProposals + '/proposals/'+ req.params.id
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -39,7 +42,7 @@ app.get("/proposals/:id", auth, async  (req, res) => {
 app.delete("/proposals/:id", auth, access('admin'), async  (req, res) => {
     request.delete({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3002/proposals/'+ req.params.id
+        url: urlProposals + '/proposals/'+ req.params.id
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -64,7 +67,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
 
     request.get({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3002/proposals/'+ proposalId
+        url: urlProposals + '/proposals/'+ proposalId
     }, (error, response, bodyGetProposal) => {
         if (error) {
             return res.send(error)
@@ -82,7 +85,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                 console.log('approving', locationId)
                 request.get({
                     headers: {'Authorization': req.header('Authorization')},
-                    url: 'http://localhost:3001/locations/'+ locationId
+                    url: urlLocations + '/locations/'+ locationId
                 }, (error, response, bodyLocation) => {
                        console.log('body of location', bodyLocation)
                     if (error) {
@@ -93,7 +96,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                             console.log('body propsal', bodyGetProposal)
                             request.patch({
                                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
-                                url: 'http://localhost:3001/locations/'+ locationId,
+                                url: urlLocations + '/locations/'+ locationId,
                                 body: bodyGetProposal
                             }, (error, response, bodyPostLocation) => {
                                 console.log('patch to location returned')
@@ -114,7 +117,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
                             console.log('bodyGetProposal', bodyGetProposal)
                             request.post({
                                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
-                                url: 'http://localhost:3001/locations',
+                                url: urlLocations + '/locations',
                                 body: bodyGetProposal
                             }, (error, response, bodyPostLocation) => {
                                 console.log('post to location returned')
@@ -134,7 +137,7 @@ app.patch("/proposals/:id", auth, access('admin'), async (req, res) => {
             }
             request.patch({
                 headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user._id)},
-                url: 'http://localhost:3002/proposals/'+ proposalId,
+                url: urlProposals + '/proposals/'+ proposalId,
                 body: JSON.stringify(proposalBody)
             }, (error, response, body) => {
                 if (error) {

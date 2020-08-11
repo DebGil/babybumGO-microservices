@@ -5,10 +5,13 @@ const {auth, access} = require('../middleware/auth')
 
 const app = express();
 
+const urlReviews = process.env.ZUUL_URL + '/reviews'
+
+
 app.use(bodyParser.json());
 
 app.get("/reviews", auth, async  (req, res) => {
-    var url = 'http://localhost:3005/reviews'
+    var url = urlReviews + '/reviews'
     if (req.query.locationId || req.query.rating || req.query.sortBy || req.query.limit) url = url + '?'
     if (req.query.locationId ) url = url + 'locationId=' + req.query.locationId + '&'
     if (req.query.rating ) url = url + 'rating=' + req.query.rating + '&'
@@ -31,7 +34,7 @@ app.get("/reviews", auth, async  (req, res) => {
 app.get("/reviews/:id", auth, async  (req, res) => {
     request.get({
         headers: {'Authorization': req.header('Authorization')},
-        url: 'http://localhost:3005/reviews/'+ req.params.id
+        url: urlReviews + '/reviews/' + req.params.id
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -45,7 +48,7 @@ app.get("/reviews/:id", auth, async  (req, res) => {
 app.delete("/reviews/:id", auth, async  (req, res) => {
     request.delete({
         headers: {'Authorization': req.header('Authorization'),  'user': JSON.stringify(req.user)},
-        url: 'http://localhost:3005/reviews/'+ req.params.id
+        url: urlReviews + '/reviews/' + req.params.id
     }, (error, response, body) => {
         if (error) {
             res.send(error)
@@ -60,7 +63,7 @@ app.post("/reviews", auth, async (req, res) => {
     console.log('user', JSON.stringify(req.user._id))
     request.post({
         headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
-        url: 'http://localhost:3005/reviews',
+        url: urlReviews + '/reviews',
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
@@ -87,7 +90,7 @@ app.patch("/reviews/:id", auth, async (req, res) => {
     
     request.patch({
         headers: {'content-type': 'application/json', 'user': JSON.stringify(req.user)},
-        url: 'http://localhost:3005/reviews/' +req.params.id ,
+        url: urlReviews + '/reviews/' +req.params.id ,
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
