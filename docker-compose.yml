@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+    eureka:
+        build:
+            context: ./
+            dockerfile: ./eureka/Dockerfile
+        # image: springcloud/eureka
+        ports:
+        #     - "8080:8080"
+            - "8761:8761"
+    zuul:
+        build:
+            context: ./
+            dockerfile: ./zuul/Dockerfile
+        # image: netflixoss/zuul:1.0.28
+        ports: 
+            - "8080:8080"
+    gateway: 
+        build:
+            context: ./
+            dockerfile: ./packages/gateway/Dockerfile
+        ports:
+            - "3000:3000"
+
+    users: 
+        build:
+            context: ./
+            dockerfile: ./packages/users/Dockerfile
+        ports:
+            - "3004:3004"
+        links:
+            - mongo
+    locations: 
+        build:
+            context: ./
+            dockerfile: ./packages/locations/Dockerfile
+        ports:
+            - "3001:3001"
+        links:
+            - mongo
+    proposals: 
+        build:
+            context: ./
+            dockerfile: ./packages/proposals/Dockerfile
+        ports:
+            - "3002:3002"
+        links:
+            - mongo 
+    reviews: 
+        build:
+            context: ./
+            dockerfile: ./packages/reviews/Dockerfile
+        ports:
+            - "3003:3003"
+        links:
+            - mongo 
+    mongo:
+        image: mongo
+        volumes:
+            -  C:\Users\Deborah\docker\mongodb-data:/data/db
+        ports: 
+            - "27017:27017"
+
+

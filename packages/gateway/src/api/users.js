@@ -10,15 +10,18 @@ const urlUsers = process.env.ZUUL_URL + '/users'
 
 app.use(bodyParser.json());
 
+console.log ('url1', urlUsers)
 
 app.post("/users",  async (req, res) => {
+    const urlUsers2 = urlUsers + '/users'
+    console.log ('url', urlUsers)
     request.post({
         headers: {'content-type': 'application/json'},
-        url: urlUsers + '/users',
+        url: urlUsers2,
         body: JSON.stringify(req.body)
     }, (error, response, body) => {
         if (error) {
-            return next(error)
+            return error
         } 
         const responseObject = JSON.parse(body)
         console.log(body)

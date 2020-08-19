@@ -11,6 +11,6 @@ app.get('/', (req, res) => {
     res.json("I am proposals-service")
    })
   
-  const reg  = eurekaHelper.registerWithEureka('proposals', port);
+  const reg  = eurekaHelper.registerWithEureka('proposals', 'eureka', port);
   console.log(reg)
   

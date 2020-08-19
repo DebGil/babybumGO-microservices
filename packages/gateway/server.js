@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
   res.json("I am gateway-service")
  })
 
-eurekaHelper.registerWithEureka('gateway', port);
+eurekaHelper.registerWithEureka('gateway', 'eureka', port);
 
 // gateway()
 //   .load(path.join(__dirname, 'config'))
