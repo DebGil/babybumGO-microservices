@@ -1,15 +1,10 @@
 FROM mhart/alpine-node:latest
 
 ADD ./packages/proposals/package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /opt/app/proposals && cp -a /tmp/node_modules /opt/app/proposals
-RUN rm -fR /tmp
+RUN cd /tmp && npm install && mkdir -p /opt/app/proposals && cp -a /tmp/node_modules /opt/app/proposals && rm -fR /tmp
 
 ADD ./packages/common/package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /opt/app/common && cp -a /tmp/node_modules /opt/app/common
-
-RUN mkdir -p /opt/app/locations/src/models && cd /opt/app/locations/src/models  && npm install mongoose
+RUN cd /tmp && npm install && mkdir -p /opt/app/common && cp -a /tmp/node_modules /opt/app/common && rm -fR /tmp &&  mkdir -p /opt/app/locations/src/models && cd /opt/app/locations/src/models  && npm install mongoose
  
 WORKDIR /opt/app/proposals
 ADD ./packages/proposals/. /opt/app/proposals

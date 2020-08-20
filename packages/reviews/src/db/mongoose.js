@@ -8,4 +8,4 @@ mongoose.connect(process.env.MONGODB_URL, {
     autoIndex: true
 })
 
-mongoose.set('debug', true)
+

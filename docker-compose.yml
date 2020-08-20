@@ -16,13 +16,17 @@ services:
         # image: netflixoss/zuul:1.0.28
         ports: 
             - "8080:8080"
+        depends_on:
+            - "eureka"
     gateway: 
         build:
             context: ./
             dockerfile: ./packages/gateway/Dockerfile
         ports:
             - "3000:3000"
-
+        depends_on:
+            - "eureka"
+            - "zuul"
     users: 
         build:
             context: ./
@@ -31,6 +35,10 @@ services:
             - "3004:3004"
         links:
             - mongo
+        depends_on:
+            - "eureka"
+            - "zuul"
+            - "mongo"
     locations: 
         build:
             context: ./
@@ -39,6 +47,10 @@ services:
             - "3001:3001"
         links:
             - mongo
+        depends_on:
+            - "eureka"
+            - "zuul"
+            - "mongo"
     proposals: 
         build:
             context: ./
@@ -46,7 +58,11 @@ services:
         ports:
             - "3002:3002"
         links:
-            - mongo 
+            - mongo
+        depends_on:
+            - "eureka"
+            - "zuul"
+            - "mongo" 
     reviews: 
         build:
             context: ./
@@ -54,9 +70,13 @@ services:
         ports:
             - "3003:3003"
         links:
-            - mongo 
+            - mongo
+        depends_on:
+            - "eureka"
+            - "zuul"
+            - "mongo"
     mongo:
-        image: mongo
+        image: mvertes/alpine-mongo
         volumes:
             -  C:\Users\Deborah\docker\mongodb-data:/data/db
         ports: 

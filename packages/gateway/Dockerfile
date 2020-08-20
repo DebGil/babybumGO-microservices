@@ -1,13 +1,10 @@
 FROM mhart/alpine-node:latest
 
 ADD ./packages/gateway/package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /opt/app/gateway && cp -a /tmp/node_modules /opt/app/gateway
-RUN rm -fR /tmp
+RUN cd /tmp && npm install && mkdir -p /opt/app/gateway && cp -a /tmp/node_modules /opt/app/gateway && rm -fR /tmp
 
 ADD ./packages/common/package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /opt/app/common && cp -a /tmp/node_modules /opt/app/common
+RUN cd /tmp && npm install && mkdir -p /opt/app/common && cp -a /tmp/node_modules /opt/app/common  && rm -fR /tmp
  
 WORKDIR /opt/app/gateway
 ADD ./packages/gateway/. /opt/app/gateway
