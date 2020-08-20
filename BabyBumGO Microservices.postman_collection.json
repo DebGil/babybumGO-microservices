@@ -1,0 +1,791 @@
+{
+	"info": {
+		"_postman_id": "6b6a2200-4885-419c-bd8f-ea71e92dd56d",
+		"name": "BabyBumGO Microservices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cea59aa2-c3bd-47a8-a901-ebe1d7ea9f3d",
+						"exec": [
+							"if (pm.response.code === 201) {\r",
+							"    pm.environment.set('authToken', pm.response.json().token)\r",
+							"    console.log(pm.response.json())\r",
+							"    console.log(pm.response)\r",
+							"\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Deboraha Gil\",\r\n    \"alias\": \"debita\",\r\n    \"email\": \"debita@gmail.com\",\r\n    \"password\": \"sasasasasas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Another  User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5d9eb3a7-9275-4c1f-ab30-c490b04826e2",
+						"exec": [
+							"if (pm.response.code === 201) {\r",
+							"    pm.environment.set('authToken', pm.response.json().token)\r",
+							"    console.log(pm.response.json())\r",
+							"    console.log(pm.response)\r",
+							"\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Deboraha Gil\",\r\n    \"alias\": \"debita2\",\r\n    \"email\": \"debita2@gmail.com\",\r\n    \"password\": \"sasasasasas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Admin User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fc224f88-b3d0-4347-b769-8e2cc462e5f4",
+						"exec": [
+							"if (pm.response.code === 200) {\r",
+							"   pm.environment.set('authToken', pm.response.json().token)\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"debita@gmail.com\",\r\n\"password\":\"sasasasasas\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Regular User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1c917890-d106-447b-bc05-aeb608daa2c1",
+						"exec": [
+							"if (pm.response.code === 200) {\r",
+							"   pm.environment.set('authToken', pm.response.json().token)\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"debita2@gmail.com\",\r\n\"password\":\"sasasasasas\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout User All",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/logoutall",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"logoutall"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read User",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read User for Admins",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/profile/5f33220e5f195532e03cb227",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile",
+						"5f33220e5f195532e03cb227"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Deboraha Gil\",\r\n    \"alias\": \"debita\",\r\n    \"email\": \"debita@gmail.com\",\r\n    \"password\": \"sasasasasas2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User for ADmins",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Deboraha Gil\",\r\n    \"alias\": \"debita2\",\r\n    \"email\": \"debita2@gmail.com\",\r\n    \"password\": \"sasasasasas2\",\r\n    \"role\": \"admin\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/profile/5f33220e5f195532e03cb227",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile",
+						"5f33220e5f195532e03cb227"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/profile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User for Admins",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/profile/5f33220e5f195532e03cb227",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"profile",
+						"5f33220e5f195532e03cb227"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create location",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Stephens Green Shopping Centre\",\r\n    \"address\": \"Stephens Green Shopping Centre\",\r\n    \"additionalInfo\": \"Level 3\"\r\n    }\r\n\r\n\r\n\r\n\r\n   \r\n  \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/locations",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get locations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/locations?latitude=53.2839928&longitude=-6.3192348&distance=55",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"locations"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "53.2839928"
+						},
+						{
+							"key": "longitude",
+							"value": "-6.3192348"
+						},
+						{
+							"key": "distance",
+							"value": "55"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read Location info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/locations/5f33231d2b8cb4599c5a6df9",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"locations",
+						"5f33231d2b8cb4599c5a6df9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Location",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/locations/5f33231d2b8cb4599c5a6df9",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"locations",
+						"5f33231d2b8cb4599c5a6df9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Location info",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Stephens Green 3rd level changing\",\r\n    \"address\": \"Stephens Green Shopping Centre\",\r\n    \"additionalInfo\": \"Level 3\"\r\n    }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/locations/5f3323cb2b8cb4599c5a6dfb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"locations",
+						"5f3323cb2b8cb4599c5a6dfb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Approve Proposal",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"status\":\"Approved\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/proposals/5f3efb8fce766f0031f2a915",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"proposals",
+						"5f3efb8fce766f0031f2a915"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reject Proposal",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"status\":\"Rejected\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/proposals/5f31cb0478e6644a5c9f9973",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"proposals",
+						"5f31cb0478e6644a5c9f9973"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Proposal",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/proposals/5f33231d2b8cb4599c5a6dfa",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"proposals",
+						"5f33231d2b8cb4599c5a6dfa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Proposals",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/proposals",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"proposals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Proposal",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"status\":\"Rejected\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/proposals/5f33231d2b8cb4599c5a6dfa",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"proposals",
+						"5f33231d2b8cb4599c5a6dfa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Review",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"locationId\": \"5f3efb8fce766f0031f2a914\",\r\n    \"text\": \"no running water\",\r\n    \"rating\": \"1\"\r\n    }\r\n\r\n\r\n\r\n\r\n   \r\n  \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/reviews",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reviews",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/reviews?locationId=5f3323cb2b8cb4599c5a6dfb&rating=1&limit=2&sortBy=text:desc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reviews"
+					],
+					"query": [
+						{
+							"key": "locationId",
+							"value": "5f3323cb2b8cb4599c5a6dfb"
+						},
+						{
+							"key": "rating",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "2"
+						},
+						{
+							"key": "sortBy",
+							"value": "text:desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Review",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/reviews/5f332544e227013b24dba153",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reviews",
+						"5f332544e227013b24dba153"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PAtch Review",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"locationId\": \"5f3323cb2b8cb4599c5a6dfb\",\r\n    \"text\": \"no running water\",\r\n    \"rating\": \"4\"\r\n    }\r\n\r\n\r\n\r\n\r\n   \r\n  \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/reviews/5f332544e227013b24dba153",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reviews",
+						"5f332544e227013b24dba153"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Review",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/reviews/5f332544e227013b24dba153",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reviews",
+						"5f332544e227013b24dba153"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "e0ea5412-d9cc-46ed-95a6-ada64f38fd2a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "19019b25-31b6-451b-ba04-c2df7e2c6bbd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,0 +1,10 @@
+build:
+    docker:
+        eureka: ./eureka/Dockerfile
+        zuul: ./zuul/Dockerfile
+        gateway: ./packages/gateway/Dockerfile
+        users: ./packages/users/Dockerfile
+        locations: ./packages/locations/Dockerfile
+        reviews: ./packages/reviews/Dockerfile
+        proposals: ./packages/proposals/Dockerfile
+
