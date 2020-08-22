@@ -3,6 +3,7 @@ const express = require('express')
 //const gateway = require('express-gateway');
 const eurekaHelper = require('../common/src/eureka/eureka-helper')
 const port = process.env.PORT 
+const eureka = process.env.EUREKA
 
 const locations = require('./src/api/locations')
 const users = require('./src/api/users')
@@ -24,7 +25,7 @@ app.get('/', (req, res) => {
   res.json("I am gateway-service")
  })
 
-eurekaHelper.registerWithEureka('gateway', 'eureka', port);
+eurekaHelper.registerWithEureka('gateway', eureka, port);
 
 // gateway()
 //   .load(path.join(__dirname, 'config'))

@@ -14,6 +14,8 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "dev": "env-cmd -f ./config/dev.env nodemon server.js"
+    "dev": "env-cmd -f ./config/dev.env nodemon server.js",
+    "prod": "env-cmd -f ./config/prod.env nodemon server.js"
+
   }
 }
